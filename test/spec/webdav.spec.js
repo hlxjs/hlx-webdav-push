@@ -91,6 +91,20 @@ test('webdav.writeData', async t => {
     t.is(createWriteStreamSpy.callCount, 1); // No additional call
     t.is(putFileContentsSpy.callCount, 3);
     t.is(putFileContentsSpy.getCall(2).args[0], '/path/to/dir/webdav/jkl.m3u8');
+
+    writer = new WebDAVWriter({url: 'https://foo.bar/webdav'});
+    destPath = await writer.writeData({uri: 'ghi.m3u8?abc=def', data: 'text data'});
+    t.is(destPath, '/webdav/ghi.m3u8');
+    t.is(createWriteStreamSpy.callCount, 1); // No additional call
+    t.is(putFileContentsSpy.callCount, 4);
+    t.is(putFileContentsSpy.getCall(3).args[0], '/webdav/ghi.m3u8');
+
+    writer = new WebDAVWriter({url: 'https://foo.bar/webdav'});
+    destPath = await writer.writeData({uri: 'ghi.m3u8#default', data: 'text data'});
+    t.is(destPath, '/webdav/ghi.m3u8');
+    t.is(createWriteStreamSpy.callCount, 1); // No additional call
+    t.is(putFileContentsSpy.callCount, 5);
+    t.is(putFileContentsSpy.getCall(4).args[0], '/webdav/ghi.m3u8');
   } catch (err) {
     t.fail(err.stack);
   }
