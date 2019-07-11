@@ -50,9 +50,11 @@ Creates a new `TransformStream` object.
 | url | string | N/A     | URL of the destination (webdav server endpoint) |
 | user | string | N/A   | Basic auth user name |
 | pass | string | N/A   | Basic auth password for the server |
+| digest | boolean | false   | If true and user/pass are both specified, digest-based authentication will be enabled |
 | token | object | N/A   | An object holding Access Token parameters issued by [OAuth 2.0](https://tools.ietf.org/html/rfc6749) auth server. Client must specify either `token` or `user`/`path`. `token` is ignored when `user`/`pass` are present. |
 | rootPath | string | The path included in `url` | Will be used when the playlist contains relative urls |
 | concurrency | number | 6       | Max number of requests concurrently sent |
+| agent | http.Agent | undefined       | Proxy agent |
 
 
 #### return value
