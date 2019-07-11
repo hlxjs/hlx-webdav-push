@@ -3,13 +3,14 @@ const path = require('path');
 const debug = require('debug');
 const {createClient} = require('webdav');
 
-const {getPathFromUrl, getPath} = require('./util');
+const {getPathFromUrl, getPath, createUrl} = require('./util');
 
 const print = debug('hlx-webdav-push');
 
 class WebDAVWriter {
   constructor({url, user, pass, token, rootPath = getPathFromUrl(url), digest = false, agent}) {
     this.rootPath = rootPath;
+    this.url = url;
     print(`WebDAVWriter#ctor: rootPath=${rootPath}`);
     if (user && pass) {
       this.client = createClient(url, {
@@ -38,6 +39,12 @@ class WebDAVWriter {
     }
 
     let remotePath;
+
+    // Remove query strings
+    const obj = createUrl(uri, this.url);
+    obj.search = '';
+    obj.hash = '';
+    uri = obj.href;
 
     if (path.isAbsolute(uri)) {
       if (fs.existsSync(uri)) {

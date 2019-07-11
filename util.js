@@ -13,13 +13,16 @@ function tryCatch(...params) {
   }
 }
 
-function createUrl(url) {
+function createUrl(url, base) {
   return tryCatch(
     () => {
       return new URL(url);
     },
     () => {
-      return {pathname: url};
+      return new URL(url, base);
+    },
+    () => {
+      return {pathname: url, href: url};
     }
   );
 }
@@ -47,6 +50,7 @@ function getPathFromUrl(url) {
 }
 
 module.exports = {
+  createUrl,
   getPathFromUrl,
   getPath
 };
