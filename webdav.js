@@ -3,12 +3,12 @@ const path = require('path');
 const debug = require('debug');
 const {createClient} = require('webdav');
 
-const {getDirFromUrl, getPath} = require('./util');
+const {getPathFromUrl, getPath} = require('./util');
 
 const print = debug('hlx-webdav-push');
 
 class WebDAVWriter {
-  constructor({url, user, pass, token, rootPath = getDirFromUrl(url), digest = false, agent}) {
+  constructor({url, user, pass, token, rootPath = getPathFromUrl(url), digest = false, agent}) {
     this.rootPath = rootPath;
     print(`WebDAVWriter#ctor: rootPath=${rootPath}`);
     if (user && pass) {
@@ -43,7 +43,7 @@ class WebDAVWriter {
       if (fs.existsSync(uri)) {
         remotePath = path.join(rootPath, path.basename(uri));
       } else {
-        remotePath = getDirFromUrl(uri);
+        remotePath = path.join(rootPath, getPathFromUrl(uri));
       }
     } else {
       remotePath = path.join(rootPath, getPath(uri));
@@ -52,12 +52,14 @@ class WebDAVWriter {
     print(`\tremotePath=${remotePath}`);
 
     // Create directory
+    /*
     const dir = path.dirname(remotePath);
     const stat = await client.stat(dir);
     if (!stat || stat.type !== 'directory') {
       print(`\tCreate directory: ${dir}`);
       await client.createDirectory(dir);
     }
+    */
 
     if (Buffer.isBuffer(data)) {
       print('\tWrite binary data');

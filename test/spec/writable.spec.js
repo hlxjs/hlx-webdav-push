@@ -152,7 +152,6 @@ test.cb('writeStream.onlySegments', t => {
   delete require.cache[require.resolve('fs')];
   const WebDAVWriter = proxyquire('../../webdav', {fs: mockFs, webdav: mockWebdav});
   const WriteStream = proxyquire('../../writable', {'./webdav': WebDAVWriter});
-  const createDirectorySpy = sinon.spy(mockWebdavMethods, 'createDirectory');
   const putFileContentsSpy = sinon.spy(mockWebdavMethods, 'putFileContents');
   const createWriteStreamSpy = sinon.spy(mockWebdavMethods, 'createWriteStream');
 
@@ -161,7 +160,6 @@ test.cb('writeStream.onlySegments', t => {
   const dest = new NullWriteStream();
   src.pipe(webdavWriter).pipe(dest)
   .on('finish', () => {
-    t.is(createDirectorySpy.callCount, 0);
     t.is(putFileContentsSpy.callCount, 4);
     t.is(createWriteStreamSpy.callCount, 9);
     t.end();
