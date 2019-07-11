@@ -8,13 +8,15 @@ const {getDirFromUrl, getPath} = require('./util');
 const print = debug('hlx-webdav-push');
 
 class WebDAVWriter {
-  constructor({url, user, pass, token, rootPath = getDirFromUrl(url)}) {
+  constructor({url, user, pass, token, rootPath = getDirFromUrl(url), digest = false, agent}) {
     this.rootPath = rootPath;
     print(`WebDAVWriter#ctor: rootPath=${rootPath}`);
     if (user && pass) {
       this.client = createClient(url, {
         username: user,
-        password: pass
+        password: pass,
+        digest,
+        httpAgent: agent
       });
     } else {
       this.client = createClient(url, {
