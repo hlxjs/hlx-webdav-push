@@ -55,12 +55,11 @@ test('webdav.writeData', async t => {
 
   const mockFs = {
     existsSync(path) {
-      return path === '/webdav' || path === '/path/to/dir';
+      return path.startsWith('/path/to/dir');
     }
   };
 
   const WebDAVWriter = proxyquire('../../webdav', {fs: mockFs, webdav: mockWebdav});
-  const createDirectorySpy = sinon.spy(mockWebdavMethods, 'createDirectory');
   const putFileContentsSpy = sinon.spy(mockWebdavMethods, 'putFileContents');
   const createWriteStreamSpy = sinon.spy(mockWebdavMethods, 'createWriteStream');
 
@@ -68,8 +67,6 @@ test('webdav.writeData', async t => {
     let writer = new WebDAVWriter({rootPath: '/path/to/unknown'});
     let destPath = await writer.writeData({uri: 'abc.mp4', data: Buffer.alloc(10)});
     t.is(destPath, '/path/to/unknown/abc.mp4');
-    t.is(createDirectorySpy.callCount, 1);
-    t.is(createDirectorySpy.calledWith('/path/to/unknown'), true);
     t.is(putFileContentsSpy.callCount, 1);
     t.is(putFileContentsSpy.calledWith('/path/to/unknown/abc.mp4'), true);
     t.is(createWriteStreamSpy.callCount, 0);
@@ -77,7 +74,6 @@ test('webdav.writeData', async t => {
     writer = new WebDAVWriter({rootPath: '/path/to/dir'});
     destPath = await writer.writeData({uri: 'def.mp4', data: new DummyReadable({})});
     t.is(destPath, '/path/to/dir/def.mp4');
-    t.is(createDirectorySpy.callCount, 1); // No additional call
     t.is(putFileContentsSpy.callCount, 1); // No additional call
     t.is(createWriteStreamSpy.callCount, 1);
     t.is(createWriteStreamSpy.calledWith('/path/to/dir/def.mp4'), true);
@@ -85,18 +81,16 @@ test('webdav.writeData', async t => {
     writer = new WebDAVWriter({url: 'https://foo.bar/webdav'});
     destPath = await writer.writeData({uri: 'ghi.m3u8', data: 'text data'});
     t.is(destPath, '/webdav/ghi.m3u8');
-    t.is(createDirectorySpy.callCount, 1); // No additional call
     t.is(createWriteStreamSpy.callCount, 1); // No additional call
     t.is(putFileContentsSpy.callCount, 2);
     t.is(putFileContentsSpy.getCall(1).args[0], '/webdav/ghi.m3u8');
 
     writer = new WebDAVWriter({rootPath: '/path/to/dir'});
     destPath = await writer.writeData({uri: '/webdav/jkl.m3u8', data: 'text data'});
-    t.is(destPath, '/webdav/jkl.m3u8');
-    t.is(createDirectorySpy.callCount, 1); // No additional call
+    t.is(destPath, '/path/to/dir/webdav/jkl.m3u8');
     t.is(createWriteStreamSpy.callCount, 1); // No additional call
     t.is(putFileContentsSpy.callCount, 3);
-    t.is(putFileContentsSpy.getCall(2).args[0], '/webdav/jkl.m3u8');
+    t.is(putFileContentsSpy.getCall(2).args[0], '/path/to/dir/webdav/jkl.m3u8');
   } catch (err) {
     t.fail(err.stack);
   }

@@ -42,11 +42,11 @@ function getPath(url) {
   return p;
 }
 
-function getDirFromUrl(url) {
+function getPathFromUrl(url) {
   return createUrl(url).pathname;
 }
 
 module.exports = {
-  getDirFromUrl,
+  getPathFromUrl,
   getPath
 };
