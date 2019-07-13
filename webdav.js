@@ -8,10 +8,11 @@ const {getPathFromUrl, getPath, createUrl} = require('./util');
 const print = debug('hlx-webdav-push');
 
 class WebDAVWriter {
-  constructor({url, user, pass, token, rootPath = getPathFromUrl(url), digest = false, agent}) {
+  constructor({url, user, pass, token, rootPath = '', digest = false, agent}) {
     this.rootPath = rootPath;
     this.url = url;
-    print(`WebDAVWriter#ctor: rootPath=${rootPath}`);
+    this.suffix = getPathFromUrl(url);
+    print(`WebDAVWriter#ctor: rootPath=${rootPath}, suffix=${this.suffix}`);
     if (user && pass) {
       this.client = createClient(url, {
         username: user,
@@ -32,7 +33,9 @@ class WebDAVWriter {
   async writeData({uri, data}) {
     const {client, rootPath} = this;
 
-    print(`writeData: Enter. uri="${uri}", rootPath="${rootPath}"`);
+    const basePath = rootPath || this.suffix;
+
+    print(`writeData: Enter. uri="${uri}", basePath="${basePath}"`);
 
     if (!data) {
       return Promise.reject(new Error('No data'));
@@ -48,12 +51,12 @@ class WebDAVWriter {
 
     if (path.isAbsolute(uri)) {
       if (fs.existsSync(uri)) {
-        remotePath = path.join(rootPath, path.basename(uri));
+        remotePath = path.join(basePath, path.basename(uri));
       } else {
-        remotePath = path.join(rootPath, getPathFromUrl(uri));
+        remotePath = path.join(basePath, getPathFromUrl(uri));
       }
     } else {
-      remotePath = path.join(rootPath, getPath(uri));
+      remotePath = path.join(basePath, getPath(uri));
     }
 
     print(`\tremotePath=${remotePath}`);
