@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/hlxjs/hlx-webdav-push/badge.svg?branch=master)](https://coveralls.io/github/hlxjs/hlx-webdav-push?branch=master)
 [![Dependency Status](https://david-dm.org/hlxjs/hlx-webdav-push.svg)](https://david-dm.org/hlxjs/hlx-webdav-push)
 [![Development Dependency Status](https://david-dm.org/hlxjs/hlx-webdav-push/dev-status.svg)](https://david-dm.org/hlxjs/hlx-webdav-push#info=devDependencies)
+[![Known Vulnerabilities](https://snyk.io/test/github/hlxjs/hlx-webdav-push/badge.svg)](https://snyk.io/test/github/hlxjs/hlx-webdav-push)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 
 # hlx-webdav-push
