@@ -41,18 +41,12 @@ class WebDAVWriter {
   writeData({uri, parentUri, data}) {
     const {client, inputDir, outputDir} = this;
 
-    let remotePath;
-
     print(`writeData: uri=${uri}, parentUri=${parentUri}, inputDir=${inputDir}, outputDir=${outputDir}`);
 
     const obj = createUrl(uri, parentUri || 'http://dummy.uri');
     obj.search = '';
     obj.hash = '';
-    if (obj.protocol === 'file:') {
-      remotePath = path.join(outputDir, path.relative(inputDir, obj.pathname));
-    } else {
-      remotePath = path.join(outputDir, obj.pathname);
-    }
+    const remotePath = path.join(outputDir, path.relative(inputDir, obj.pathname));
 
     print(`\tremotePath=${remotePath}`);
 

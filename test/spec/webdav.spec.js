@@ -79,7 +79,7 @@ test('webdav.writeData', async t => {
     t.is(putFileContentsSpy.callCount, 2);
     t.is(putFileContentsSpy.getCall(1).args[0], '/webdav/ghi.m3u8');
 
-    writer = new WebDAVWriter({url: 'http://web.dav/dest/', inputDir: '/path/to/dir'});
+    writer = new WebDAVWriter({url: 'http://web.dav/dest/'});
     destPath = await writer.writeData({uri: '/webdav/jkl.m3u8', data: 'text data'});
     t.is(destPath, '/dest/webdav/jkl.m3u8');
     t.is(createWriteStreamSpy.callCount, 1); // No additional call
