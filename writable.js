@@ -16,7 +16,7 @@ class WriteStream extends stream.Transform {
     let params = data;
 
     if (data.type === 'playlist') {
-      params = {uri: data.uri, data: HLS.stringify(data)};
+      params = {uri: data.uri, parentUri: data.parentUri, data: HLS.stringify(data)};
     }
 
     print(`Writing data to ${params.uri}`);
