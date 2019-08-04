@@ -119,12 +119,6 @@ class DummyReadable extends stream.Readable {
 }
 
 test.cb('writeStream.onlySegments', t => {
-  const mockFs = {
-    existsSync(path) {
-      return path.startsWith('/var/foo');
-    }
-  };
-
   const mockWebdavMethods = {
     stat(path) {
       if (path.startsWith('/var/foo')) {
@@ -150,13 +144,13 @@ test.cb('writeStream.onlySegments', t => {
   };
 
   delete require.cache[require.resolve('fs')];
-  const WebDAVWriter = proxyquire('../../webdav', {fs: mockFs, webdav: mockWebdav});
+  const WebDAVWriter = proxyquire('../../webdav', {webdav: mockWebdav});
   const WriteStream = proxyquire('../../writable', {'./webdav': WebDAVWriter});
   const putFileContentsSpy = sinon.spy(mockWebdavMethods, 'putFileContents');
   const createWriteStreamSpy = sinon.spy(mockWebdavMethods, 'createWriteStream');
 
   const src = new MockReadStream();
-  const webdavWriter = new WriteStream({rootPath: '/var/foo/'});
+  const webdavWriter = new WriteStream({url: 'http://foo.bar/dest/', inputDir: '/var/foo/'});
   const dest = new NullWriteStream();
   src.pipe(webdavWriter).pipe(dest)
   .on('finish', () => {

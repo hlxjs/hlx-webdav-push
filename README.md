@@ -53,7 +53,7 @@ Creates a new `TransformStream` object.
 | pass | string | N/A   | Basic auth password for the server |
 | digest | boolean | false   | If true and user/pass are both specified, digest-based authentication will be enabled |
 | token | object | N/A   | An object holding Access Token parameters issued by [OAuth 2.0](https://tools.ietf.org/html/rfc6749) auth server. Client must specify either `token` or `user`/`path`. `token` is ignored when `user`/`pass` are present. |
-| rootPath | string | The path included in `url` | Will be used when the playlist contains relative urls |
+| inputDir | string | / | The root directory from which all the files are read (This option is only used in case of file urls) |
 | concurrency | number | 6       | Max number of requests concurrently sent |
 | agent | http.Agent | undefined       | Proxy agent |
 

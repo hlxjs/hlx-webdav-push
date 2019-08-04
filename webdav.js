@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const {URL} = require('url');
 const debug = require('debug');
@@ -17,13 +16,14 @@ function createUrl(url, base) {
 }
 
 class WebDAVWriter {
-  constructor({url, user, pass, token, rootPath = '', digest = false, agent}) {
-    this.rootPath = rootPath;
-    if (url) {
-      this.url = url;
-      this.suffix = createUrl(url).pathname;
+  constructor({url, user, pass, token, digest = false, agent, inputDir = '/'}) {
+    this.url = url;
+    if (!path.isAbsolute(inputDir)) {
+      inputDir = path.join(process.cwd(), inputDir);
     }
-    print(`WebDAVWriter#ctor: rootPath=${rootPath}, suffix=${this.suffix}`);
+    this.inputDir = inputDir;
+    this.outputDir = createUrl(url).pathname;
+    print(`WebDAVWriter#ctor: inputDir=${this.inputDir}, outputDir=${this.outputDir}`);
     if (user && pass) {
       this.client = createClient(url, {
         username: user,
@@ -36,41 +36,22 @@ class WebDAVWriter {
         token
       });
     }
-    if (!path.isAbsolute(rootPath)) {
-      rootPath = path.join('/', rootPath);
-    }
   }
 
-  async writeData({uri, data}) {
-    const {client, rootPath} = this;
-
-    const basePath = rootPath || this.suffix;
-
-    print(`writeData: Enter. uri="${uri}", basePath="${basePath}"`);
-
-    if (!data) {
-      return Promise.reject(new Error('No data'));
-    }
+  writeData({uri, parentUri, data}) {
+    const {client, inputDir, outputDir} = this;
 
     let remotePath;
 
-    // Remove query strings
-    const obj = createUrl(uri, this.url);
-    if (obj) {
-      obj.search = '';
-      obj.hash = '';
-      uri = obj.pathname;
-    }
+    print(`writeData: uri=${uri}, parentUri=${parentUri}, inputDir=${inputDir}, outputDir=${outputDir}`);
 
-    if (path.isAbsolute(uri)) {
-      if (fs.existsSync(uri)) {
-        remotePath = path.join(basePath, path.basename(uri));
-      } else {
-        const obj = createUrl(uri);
-        remotePath = path.join(basePath, obj ? obj.pathname : uri);
-      }
+    const obj = createUrl(uri, parentUri || 'http://dummy.uri');
+    obj.search = '';
+    obj.hash = '';
+    if (obj.protocol === 'file:') {
+      remotePath = path.join(outputDir, path.relative(inputDir, obj.pathname));
     } else {
-      remotePath = path.join(basePath, uri);
+      remotePath = path.join(outputDir, obj.pathname);
     }
 
     print(`\tremotePath=${remotePath}`);
