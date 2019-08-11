@@ -3,7 +3,7 @@ const {URL} = require('url');
 const debug = require('debug');
 const {createClient} = require('webdav');
 
-const {tryCatch} = require('hlx-util');
+const {tryCatch, buildLocalPath} = require('hlx-util');
 
 const print = debug('hlx-webdav-push');
 
@@ -41,14 +41,7 @@ class WebDAVWriter {
   writeData({uri, parentUri, data}) {
     const {client, inputDir, outputDir} = this;
 
-    print(`writeData: uri=${uri}, parentUri=${parentUri}, inputDir=${inputDir}, outputDir=${outputDir}`);
-
-    const obj = createUrl(uri, parentUri || 'http://dummy.uri');
-    obj.search = '';
-    obj.hash = '';
-    const remotePath = path.join(outputDir, path.relative(inputDir, obj.pathname));
-
-    print(`\tremotePath=${remotePath}`);
+    const remotePath = buildLocalPath(uri, parentUri, inputDir, outputDir);
 
     // Create directory
     /*
