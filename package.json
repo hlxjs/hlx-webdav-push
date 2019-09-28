@@ -1,6 +1,6 @@
 {
   "name": "hlx-webdav-push",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A writable stream to send HLS streams to an external WebDAV server",
   "main": "index.js",
   "directories": {
